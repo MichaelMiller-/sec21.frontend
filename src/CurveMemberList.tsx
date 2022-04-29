@@ -41,7 +41,7 @@ const CurveMemberList = (props: ListProps<DbCurveMember>) => {
                     <th>Begin node</th>
                     <th>End node</th>
                     <th>Cross Section</th>
-                    <th>Systemline</th>
+                    <th>System line</th>
                 </tr>
                 </thead>
                 <tbody>
