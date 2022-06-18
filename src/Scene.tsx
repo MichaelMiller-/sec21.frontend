@@ -1,14 +1,15 @@
-import React, {Suspense, useMemo, useRef, useState} from 'react';
+import React, {Suspense, useMemo, useState} from 'react';
 import {DbCurveMember, DbPointSupport, DbStructuralPoint} from "./DatabaseInterface";
 import './App.css'
-import {Canvas, useFrame} from '@react-three/fiber';
-import {Color, TextureLoader, Vector2, Vector3} from 'three';
+import {Canvas} from '@react-three/fiber';
+import {TextureLoader, Vector2, Vector3} from 'three';
 import Dot from './renderer/Dot';
 import Line from "./renderer/Line";
 import CameraControls from "./renderer/CameraControls";
 import {HoverImageShader} from "./renderer/Shader";
-import Modak from "./Modak.json";
+// import Modak from "./Modak.json";
 
+/*
 type TextProps = {
     position: Vector3
     color: string
@@ -20,7 +21,6 @@ type TextProps = {
 //function Text({ children, position, opacity, color = 'black', fontSize = 35 }) {
 
 const Text = (props: TextProps) => {
-    /*
         const canvas = useMemo(() => {
             const fontface = "Arial";
             const fontsize = props.fontSize;
@@ -42,7 +42,6 @@ const Text = (props: TextProps) => {
         }, [children])
 
         <canvasTexture attach="map" image={canvas} />
-    */
 
     return (
         <sprite scale={[5, 3, 3]} position={props.position}>
@@ -52,7 +51,7 @@ const Text = (props: TextProps) => {
         </sprite>
     )
 }
-
+*/
 type LagerProps = {
     position: Vector3
 }
@@ -65,7 +64,7 @@ const Lager = (props: LagerProps) => {
         </mesh>
     )
 }
-
+/*
 type TextObjectProps = {
     text: string
     position: Vector3
@@ -76,7 +75,6 @@ function TextObject(props: TextObjectProps)
     const mesh = useRef(null);
 
     // const font = new FontLoader().parse(Modak);
-/*
     const textOptions = {
         font,
         size: 4,
@@ -95,12 +93,10 @@ function TextObject(props: TextObjectProps)
             <meshBasicMaterial attach="material" color="cyan" />
         </mesh>
     );
-
- */
     return (<></>);
 }
-
-
+*/
+/*
 type SphereProps = {
     position: Vector3
     color: Color
@@ -114,23 +110,23 @@ const Sphere = (props: SphereProps) => {
         </mesh>
     );
 };
-
+*/
 const image = 'https://images.unsplash.com/photo-1517462964-21fdcec3f25b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80'
 
 type ImageProps = {
     url: string
 }
 
-const Image = (props: ImageProps) =>  {
+const Image = (props: ImageProps) => {
     const [texture] = useMemo(() => {
         const loader = new TextureLoader()
         return [loader.load(props.url)]
     }, [props.url])
 
     return (
-        <mesh position={[0, 0, 5]} scale={[1, 1, 1]} rotation={[0, 0, 0]} >
-            <planeBufferGeometry attach="geometry" args={[5, 7]} />
-            <shaderMaterial attach="material" transparent args={[HoverImageShader]} uniforms-texture-value={texture} />
+        <mesh position={[0, 0, 5]} scale={[1, 1, 1]} rotation={[0, 0, 0]}>
+            <planeBufferGeometry attach="geometry" args={[5, 7]}/>
+            <shaderMaterial attach="material" transparent args={[HoverImageShader]} uniforms-texture-value={texture}/>
         </mesh>
     )
 }
@@ -169,7 +165,7 @@ const Scene = (props: SceneProps) => {
                 }}>
                 <Suspense fallback={null}>
 
-                    <Image url={image} />
+                    <Image url={image}/>
 
                     {props.structural_points.map(e => (
                         <Dot position={new Vector3(e.coordinate_x, e.coordinate_y, e.coordinate_z)} name={e.name}/>))}
@@ -184,7 +180,7 @@ const Scene = (props: SceneProps) => {
                         <Lager
                             position={new Vector3(e.referencePoint.coordinate_x, e.referencePoint.coordinate_y, e.referencePoint.coordinate_z)}/>
                     ))}
-                    <gridHelper args={[10, 10, `white`, `gray`]} />
+                    <gridHelper args={[10, 10, `white`, `gray`]}/>
                     <axesHelper/>
                     <CameraControls zoom={zoom} deltaDrag={dragDistance}/>
                 </Suspense>

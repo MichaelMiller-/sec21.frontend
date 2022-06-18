@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {Button, Col, Form, Row, Spinner, Tab, Tabs} from "react-bootstrap";
-import { RouteComponentProps, useHistory } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Button, Spinner, Tab, Tabs} from "react-bootstrap";
+import {RouteComponentProps, useHistory} from "react-router-dom";
 import CrossSectionList from './CrossSectionList'
 import {
     DbCrossSection,
@@ -21,53 +21,9 @@ import PointSupportList from "./PointSupportList";
 import PointActionList from "./PointActionList";
 import LogPalette from "./LogPalette";
 import Scene from "./Scene";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faCopy, faSync} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSync} from "@fortawesome/free-solid-svg-icons";
 
-
-type DltProps = {
-    crossSections: DbCrossSection[]
-}
-
-const Dlt = (props: DltProps) => {
-
-    const [selectedCrossSection, setSelectedCrossSection] = useState(0);
-
-    const handleNewField = async (event: { currentTarget: any; preventDefault: () => void; stopPropagation: () => void; }) => {
-        event.preventDefault();
-
-        console.log("TODO: submit")
-    }
-
-    return (
-        <Form onSubmit={handleNewField}>
-            <Row className="g-2">
-                <Form.Group as={Col} md="4" controlId="validationDltLength">
-                    <Form.Label>L [m]</Form.Label>
-                    <Form.Control
-                        required
-                        type="text"
-                        name="length"
-                    />
-                    <Form.Control.Feedback>Please provide a valid name.</Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group as={Col} sm="4" controlId="validationDltCrossSection">
-                    <Form.Label>Cross Section</Form.Label>
-                    <Form.Control as="select" onChange={(e: any) => {
-                        setSelectedCrossSection(e.target.selectedIndex);
-                    }}>
-                        {props.crossSections.map(e => (<option key={e.id}>{e.name}</option>))}
-                    </Form.Control>
-                </Form.Group>
-                <Col md>
-                    <Button variant="link" type="submit">
-                        <FontAwesomeIcon icon={faCopy} size="2x" />
-                    </Button>
-                </Col>
-            </Row>
-        </Form>
-    )
-}
 
 type ProjectListProps = {
     projectId: string
@@ -97,7 +53,7 @@ export const Project = (props: ProjectListProps) => {
     const [disableCurveMemberTab, setDisableCurveMemberTab] = useState(true)
     const [disableLoadCaseTab, setDisableLoadCaseTab] = useState(true)
     const [disableSurfaceTab, setDisableSurfaceTab] = useState(true)
-    const [calculated, setCalculated] = useState(false)
+    // const [calculated, setCalculated] = useState(false)
     const [showLog, setShowLog] = useState(false)
     const [errors, setErrors] = useState<string[]>([])
     const [warnings, setWarnings] = useState<string[]>([])
@@ -267,7 +223,7 @@ export const Project = (props: ProjectListProps) => {
         //! \todo hardcoded loadcase
         const response = await axios.get(process.env.REACT_APP_SERVICE_PROVIDER + '/esbp?project=' + props.projectId + '&loadcase=1')
 
-        setCalculated(response.data[0].status)
+        // setCalculated(response.data[0].status)
 
         const messages = response.data[0].messages.filter((e: { kind: string; }) => e.kind === "Error").map((e: any) => e.message)
         if (messages.length > 0) {
@@ -277,13 +233,13 @@ export const Project = (props: ProjectListProps) => {
     }
 
     const openReport = async () => {
-        const response = await axios.get(process.env.REACT_APP_SERVICE_PROVIDER + '/generate_report', { params: { project: props.projectId } });
+        const response = await axios.get(process.env.REACT_APP_SERVICE_PROVIDER + '/generate_report', {params: {project: props.projectId}});
         const filename = response.data[0].data;
         window.open(process.env.REACT_APP_DOWNLOAD_URL + filename, "_blank", "toolbar=yes,width=600,height=800");
     }
 
     const onCheck = async () => {
-        const response = await axios.get(process.env.REACT_APP_SERVICE_PROVIDER + '/sanity_check', { params: { project: props.projectId } });
+        const response = await axios.get(process.env.REACT_APP_SERVICE_PROVIDER + '/sanity_check', {params: {project: props.projectId}});
 
         const em = response.data[0].messages.filter((e: { kind: string; }) => e.kind === "Error").map((e: any) => e.message)
         const wm = response.data[0].messages.filter((e: { kind: string; }) => e.kind === "Warning").map((e: any) => e.message)
@@ -307,46 +263,51 @@ export const Project = (props: ProjectListProps) => {
     //! \TODO: enable 'calculate' only if at least one loadcase is selected
     return (
         <>
-            <Header onBack={onBack} disabledBackButton={false} title={"Project: " + project.name} />
+            <Header onBack={onBack} disabledBackButton={false} title={"Project: " + project.name}/>
             <Tabs defaultActiveKey="system" id="uncontrolled-tab-example" className="mb-3">
                 <Tab eventKey="system" title="System">
                     <Button variant="link" onClick={() => {
                         getPointSupportList()
                         getCurveMemberList()
                     }}>
-                        <FontAwesomeIcon icon={faSync} size="2x" />
+                        <FontAwesomeIcon icon={faSync} size="2x"/>
                     </Button>
-                    <Button onClick={onCheck} >Check</Button>
+                    <Button onClick={onCheck}>Check</Button>
                     <Button onClick={runCalculation}>Calculate</Button>
                     <Button onClick={openReport}>Report</Button>
                     <Scene structural_points={structuralPoints} members={curveMembers} pointSupports={pointSupports}/>
                 </Tab>
                 <Tab eventKey="structure" title="Structure">
                     <StructuralPointsList projectId={props.projectId} items={structuralPoints}
-                        onUpdate={getStructuralPointList} onDelete={onDeleteStructuralPoint} />
+                                          onUpdate={getStructuralPointList} onDelete={onDeleteStructuralPoint}/>
                 </Tab>
                 <Tab eventKey="pointSupport" title="Point Support" disabled={disablePointSupportTab}>
-                    <PointSupportList projectId={props.projectId} items={pointSupports} onUpdate={getPointSupportList} onDelete={onDeletePointSupport} />
+                    <PointSupportList projectId={props.projectId} items={pointSupports} onUpdate={getPointSupportList}
+                                      onDelete={onDeletePointSupport}/>
                 </Tab>
                 <Tab eventKey="materials" title="Materials">
-                    <MaterialList projectId={props.projectId} items={materials} onUpdate={getMaterialList} onDelete={onDeleteMaterial} />
+                    <MaterialList projectId={props.projectId} items={materials} onUpdate={getMaterialList}
+                                  onDelete={onDeleteMaterial}/>
                 </Tab>
                 <Tab eventKey="crossSections" title="Cross Sections" disabled={disableCrossSectionTab}>
                     <CrossSectionList projectId={props.projectId} items={crossSections}
-                        onUpdate={getCrossSectionList} onDelete={onDeleteCrossSection} />
+                                      onUpdate={getCrossSectionList} onDelete={onDeleteCrossSection}/>
                 </Tab>
                 <Tab eventKey="members" title="Curve Members" disabled={disableCurveMemberTab}>
-                    <CurveMemberList projectId={props.projectId} items={curveMembers} onUpdate={getCurveMemberList} onDelete={onDeleteCurveMember} />
+                    <CurveMemberList projectId={props.projectId} items={curveMembers} onUpdate={getCurveMemberList}
+                                     onDelete={onDeleteCurveMember}/>
                 </Tab>
                 <Tab eventKey="surface" title="Surfaces" disabled={disableSurfaceTab}>
                     <SurfaceMemberList projectId={props.projectId} items={surfaceMembers}
-                        onUpdate={getSurfaceMemberList} onDelete={onDeleteSurfaceMember} />
+                                       onUpdate={getSurfaceMemberList} onDelete={onDeleteSurfaceMember}/>
                 </Tab>
                 <Tab eventKey="loadcases" title="Load Cases" disabled={disableLoadCaseTab}>
-                    <LoadCaseList projectId={props.projectId} items={loadCases} onUpdate={getLoadCaseList} onDelete={onDeleteLoadCase} />
+                    <LoadCaseList projectId={props.projectId} items={loadCases} onUpdate={getLoadCaseList}
+                                  onDelete={onDeleteLoadCase}/>
                 </Tab>
                 <Tab eventKey="loads" title="Point Load" disabled={false}>
-                    <PointActionList projectId={props.projectId} items={pointActions} onUpdate={getPointActionList} onDelete={onDeletePointAction} />
+                    <PointActionList projectId={props.projectId} items={pointActions} onUpdate={getPointActionList}
+                                     onDelete={onDeletePointAction}/>
                 </Tab>
             </Tabs>
 
@@ -354,7 +315,7 @@ export const Project = (props: ProjectListProps) => {
                 setShowLog(false)
                 setErrors([])
                 setWarnings([])
-            }} />
+            }}/>
         </>
     );
 }
