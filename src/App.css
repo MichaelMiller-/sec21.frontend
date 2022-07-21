@@ -9,3 +9,7 @@
 .transparentImage {
     background-color: transparent;
 }
+
+th.export {
+    width: 100px;
+}
