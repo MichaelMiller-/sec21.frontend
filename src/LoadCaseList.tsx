@@ -1,5 +1,5 @@
 import {useState} from "react";
-import { Table} from "react-bootstrap";
+import {Table} from "react-bootstrap";
 import {DbLoadCase} from "./DatabaseInterface";
 import DialogAddLoadCase from "./DialogAddLoadCase";
 import {ListProps} from "./ListProps";
@@ -16,9 +16,11 @@ const LoadCaseListItem = (props: ListItemProps<DbLoadCase>) => {
             <td>{props.item.description}</td>
             <td>{props.item.actionType}</td>
             <td>{props.item.type}</td>
-            <td><EditButton onClick={() => {}} disabled={true}/></td>
-            <td><CopyButton onClick={() => {}} disabled={true}/></td>
-            <td><RemoveButton onClick={() => (props.onDelete(props.item.id))} disabled={true}/></td>
+            <td><EditButton onClick={() => {
+            }} disabled={true}/></td>
+            <td><CopyButton onClick={() => {
+            }} disabled={true}/></td>
+            <td><RemoveButton onClick={() => (props.onDelete(props.item.id))} disabled={false}/></td>
         </tr>
     )
 }
@@ -29,7 +31,7 @@ const LoadCaseList = (props: ListProps<DbLoadCase>) => {
 
     return (
         <>
-                <NewButton onClick={() => setShowNewDialog(true)} disabled={false} title={"Loadcases"}/>
+            <NewButton onClick={() => setShowNewDialog(true)} disabled={false} title={"Loadcases"}/>
             <Table borderless hover size="sm">
                 <thead>
                 <tr>
