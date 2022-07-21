@@ -11,6 +11,7 @@ import RemoveButton from "./ui/RemoveButton";
 import Button from "react-bootstrap/Button";
 import LogPalette from './LogPalette';
 import DialogAddProject from "./DialogAddProject";
+import DialogImportProjectJson from "./DialogImportProjectJson";
 
 type ProjectListItemProps = {
     item: DbProject;
@@ -62,7 +63,8 @@ const ProjectList = () => {
 
     const [data, setData] = useState<DbProject[]>([])
     const [loading, setLoading] = useState(true)
-    const [showNewDialog, setShowNewDialog] = useState(false);
+    const [showDialogNew, setShowDialogNew] = useState(false);
+    const [showDialogImportJson, setShowDialogImportJson] = useState(false);
     const [showLog, setShowLog] = useState(false)
     const [errors, setErrors] = useState<string[]>([])
     const [warnings, setWarnings] = useState<string[]>([])
@@ -87,9 +89,6 @@ const ProjectList = () => {
         }
     }
 
-    const onImportJSON = async () => {
-    }
-
     useEffect(() => {
         getData()
     }, []);
@@ -101,8 +100,8 @@ const ProjectList = () => {
         <>
             <Header onBack={() => {
             }} disabledBackButton={true} title="List of Projects"/>
-            <NewButton onClick={() => setShowNewDialog(true)} disabled={false}/>
-            <Button onClick={onImportJSON} variant="link">
+            <NewButton onClick={() => setShowDialogNew(true)} disabled={false}/>
+            <Button onClick={() => setShowDialogImportJson(true)} variant="link">
                 <div className="transparentImage">
                     <Image src="logo_json.png" height={32}></Image>
                 </div>
@@ -124,8 +123,14 @@ const ProjectList = () => {
             </Table>
 
             <DialogAddProject
-                show={showNewDialog}
-                onHide={() => setShowNewDialog(false)}
+                show={showDialogNew}
+                onHide={() => setShowDialogNew(false)}
+                onSubmit={getData}
+            />
+
+            <DialogImportProjectJson
+                show={showDialogImportJson}
+                onHide={() => setShowDialogImportJson(false)}
                 onSubmit={getData}
             />
 
