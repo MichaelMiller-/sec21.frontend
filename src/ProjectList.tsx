@@ -1,11 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Col from "react-bootstrap/Col";
-import {
-    Form, Image,
-    Modal,
-    Row,
-    Spinner, Table,
-} from "react-bootstrap";
+import {Image, Spinner, Table} from "react-bootstrap";
 import {DbProject} from './DatabaseInterface';
 import axios from 'axios';
 import Header from "./ui/Header";
@@ -16,75 +10,7 @@ import formatDate from "./formatDate";
 import RemoveButton from "./ui/RemoveButton";
 import Button from "react-bootstrap/Button";
 import LogPalette from './LogPalette';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faFileExport} from "@fortawesome/free-solid-svg-icons";
-
-type ProjectDialogProps = {
-    show: boolean;
-    onHide: () => void;
-    onSubmit: () => void;
-}
-
-const ProjectDialog = (props: ProjectDialogProps) => {
-
-    const [data, setData] = useState<DbProject>({
-        id: 0,
-        name: "",
-        title: "",
-        createdAt: new Date(),
-        modifiedAt: new Date()
-    })
-
-    const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
-        const {name, value} = e.target;
-        setData({...data, [name]: value,});
-    };
-
-    const handleSubmit = async (event: { preventDefault: () => void; }) => {
-        event.preventDefault()
-        await axios.post(process.env.REACT_APP_BACKEND + '/projects', data)
-        props.onSubmit()
-        props.onHide()
-    };
-
-    return (
-        <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">Add new project</Modal.Title>
-            </Modal.Header>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Body>
-                    <Form.Group as={Col} controlId="validationProjectName">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
-                            required
-                            type="text"
-                            name="name"
-                            value={data.name}
-                            onChange={handleInputChange}
-                        />
-                        <Form.Control.Feedback>Please provide a valid name.</Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} controlId="validationProjectTitle">
-                        <Form.Label>Title</Form.Label>
-                        <Form.Control
-                            required
-                            type="text"
-                            name="title"
-                            value={data.title}
-                            onChange={handleInputChange}
-                        />
-                        <Form.Control.Feedback>Please provide a valid name.</Form.Control.Feedback>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button type="submit">Submit</Button>
-                    <Button onClick={props.onHide}>Close</Button>
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    );
-}
+import DialogAddProject from "./DialogAddProject";
 
 type ProjectListItemProps = {
     item: DbProject;
@@ -100,6 +26,12 @@ const ProjectListItem = (props: ProjectListItemProps) => {
         const filename = response.data[0].data;
         window.open(process.env.REACT_APP_DOWNLOAD_URL + filename, "_blank");
     }
+    const onExportJSON = async () => {
+        const response = await axios.get(process.env.REACT_APP_SERVICE_PROVIDER + '/export_to_json', {params: {project: props.item.id}});
+        const filename = response.data[0].data;
+        window.open(process.env.REACT_APP_DOWNLOAD_URL + filename, "_blank");
+    }
+
     return (
         <tr>
             <td><OpenButton onClick={() => (history.push("/project/" + props.item.id))} disabled={false}/></td>
@@ -109,14 +41,16 @@ const ProjectListItem = (props: ProjectListItemProps) => {
             <td style={{color: "grey"}}>{formatDate(props.item.createdAt)}</td>
             <td>
                 <Button onClick={onExportSAF} variant="link">
-                    <Row>
-                        <Col><FontAwesomeIcon icon={faFileExport} size="2x" /></Col>
-                        <Col>
-                            <div className="transparentImage">
-                                <Image src="logosaf.png" height={32}></Image>
-                            </div>
-                        </Col>
-                    </Row>
+                    <div className="transparentImage">
+                        <Image src="logo_saf2.png" height={32}></Image>
+                    </div>
+                </Button>
+            </td>
+            <td>
+                <Button onClick={onExportJSON} variant="link">
+                    <div className="transparentImage">
+                        <Image src="logo_json.png" height={32}></Image>
+                    </div>
                 </Button>
             </td>
             <td><RemoveButton onClick={() => (props.onDelete(props.item.id))}/></td>
@@ -153,6 +87,9 @@ const ProjectList = () => {
         }
     }
 
+    const onImportJSON = async () => {
+    }
+
     useEffect(() => {
         getData()
     }, []);
@@ -165,6 +102,11 @@ const ProjectList = () => {
             <Header onBack={() => {
             }} disabledBackButton={true} title="List of Projects"/>
             <NewButton onClick={() => setShowNewDialog(true)} disabled={false}/>
+            <Button onClick={onImportJSON} variant="link">
+                <div className="transparentImage">
+                    <Image src="logo_json.png" height={32}></Image>
+                </div>
+            </Button>
             <Table borderless hover size="sm">
                 <thead>
                 <tr>
@@ -173,7 +115,7 @@ const ProjectList = () => {
                     <th>Description</th>
                     <th>Last modified</th>
                     <th>Created</th>
-                    <th></th>
+                    <th className="export">Export</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -181,7 +123,7 @@ const ProjectList = () => {
                 </tbody>
             </Table>
 
-            <ProjectDialog
+            <DialogAddProject
                 show={showNewDialog}
                 onHide={() => setShowNewDialog(false)}
                 onSubmit={getData}
